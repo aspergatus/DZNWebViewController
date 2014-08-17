@@ -43,7 +43,21 @@
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @end
 
-@implementation DZNWebViewController
+@implementation DZNWebViewController{
+    BOOL tap;
+    BOOL hideNav;
+    BOOL mustShowNav;
+    CGPoint lastContentOffset;
+}
+
+typedef enum ScrollDirection {
+    ScrollDirectionNone,
+    ScrollDirectionRight,
+    ScrollDirectionLeft,
+    ScrollDirectionUp,
+    ScrollDirectionDown,
+} ScrollDirection;
+
 @synthesize URL = _URL;
 
 - (id)init
@@ -63,7 +77,7 @@
     NSParameterAssert(URL);
     NSAssert(URL != nil, @"Invalid URL");
     NSAssert(URL.scheme != nil, @"URL has no scheme");
-
+    
     self = [self init];
     if (self) {
         _URL = URL;
@@ -92,14 +106,23 @@
     self.automaticallyAdjustsScrollViewInsets = YES;
     
     [self setToolbarItems:self.navigationItems animated:NO];
+    
+    
+    
+    hideNav = NO;
+    mustShowNav = NO;
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(webViewTapped:)];
+    gestureRecognizer.delegate = self;
+    [self.webView addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
+    [self.navigationController.navigationBar setFrame:CGRectMake(0, 0, 320, 90)];
     [self.navigationController setToolbarHidden:NO];
-
+    
     self.navigationController.toolbar.barTintColor = _toolbarBackgroundColor;
     self.navigationController.toolbar.tintColor = _toolbarTintColor;
     self.navigationController.toolbar.translucent = NO;
@@ -141,6 +164,7 @@
         _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _webView.backgroundColor = [UIColor whiteColor];
+        _webView.scrollView.delegate = self;
         
         if (_loadingStyle == DZNWebViewControllerLoadingStyleProgressView)
         {
@@ -360,7 +384,7 @@
 - (void)setLoadingError:(NSError *)error
 {
     switch (error.code) {
-//        case NSURLErrorTimedOut:
+            //        case NSURLErrorTimedOut:
         case NSURLErrorUnknown:
         case NSURLErrorCancelled:
             return;
@@ -489,7 +513,7 @@
     
     controller.completionHandler = ^(NSString *activityType, BOOL completed) {
         NSLog(@"completed dialog - activity: %@ - finished flag: %d", activityType, completed);
-
+        
         _presentingActivities = NO;
     };
 }
@@ -557,7 +581,7 @@
 #pragma mark - UIWebViewDelegate methods
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{    
+{
     if (request.URL && !_presentingActivities) {
         return YES;
     }
@@ -582,7 +606,7 @@
 {
     if (_loadBalance >= 1) _loadBalance--;
     else if (_loadBalance < 0) _loadBalance = 0;
-
+    
     if (_loadBalance == 0) {
         _didLoadContent = YES;
         [self setActivityIndicatorsVisible:NO];
@@ -604,6 +628,38 @@
     [self setLoadingError:error];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView
+{
+    ScrollDirection scrollDirection;
+    
+    if (lastContentOffset.y < scrollView.contentOffset.y)
+        scrollDirection = ScrollDirectionDown;
+    else
+        scrollDirection = ScrollDirectionUp;
+    
+    
+    float endScrolling = scrollView.contentOffset.y + scrollView.frame.size.height;
+    if (scrollDirection == ScrollDirectionDown && scrollView.contentOffset.y > 50 && !mustShowNav) {
+        hideNav = YES;
+        tap = 0;
+    } else {
+        hideNav = NO;
+    }
+    
+    if (scrollDirection == ScrollDirectionUp && mustShowNav){
+        hideNav = NO;
+        mustShowNav = NO;
+    }
+    
+    if (scrollDirection == ScrollDirectionDown && endScrolling > scrollView.contentSize.height - 50 && !mustShowNav) {
+        mustShowNav = YES;
+    }
+    
+    [[self navigationController] setToolbarHidden:hideNav animated:YES];
+    lastContentOffset = scrollView.contentOffset;
+    
+    //[originalDelegate scrollViewDidScroll: scrollView];
+}
 
 #pragma mark - UIGestureRecognizerDelegate methods
 
@@ -628,6 +684,18 @@
     }
     
     return YES;
+}
+
+- (void)webViewTapped:(id)sender
+{
+    if(!tap){
+        hideNav = NO;
+        tap = 1;
+    } else {
+        hideNav = YES;
+        tap = 0;
+    }
+    [[self navigationController] setToolbarHidden:hideNav animated:YES];
 }
 
 #pragma mark - NJKWebViewProgressDelegate methods
@@ -656,7 +724,7 @@
     _backwardBarItem = nil;
     _forwardBarItem = nil;
     _loadingBarItem = nil;
-
+    
     _activityIndicatorView = nil;
     
     _webView = nil;
