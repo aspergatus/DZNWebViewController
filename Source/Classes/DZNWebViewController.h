@@ -42,7 +42,7 @@ typedef NS_OPTIONS(NSUInteger, DZNWebViewControllerLoadingStyle) {
 /** The web view that the controller manages. */
 @property (nonatomic, strong) UIWebView *webView;
 /** The URL identifying the location of the content to load. */
-@property (nonatomic, readonly) NSURL *URL;
+@property (nonatomic, strong) NSURL *URL;
 /** The loading visual style, using a progress bar or a network activity indicator. Default is DZNWebViewControllerLoadingStyleProgressView. */
 @property (nonatomic) DZNWebViewControllerLoadingStyle loadingStyle;
 /** The supported actions like sharing and copy link, add to reading list, open in Safari, etc. Default is DZNWebViewControllerActionAll. */
