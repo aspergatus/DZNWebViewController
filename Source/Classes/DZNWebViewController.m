@@ -161,7 +161,8 @@ typedef enum ScrollDirection {
 {
     if (!_webView)
     {
-        _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+        _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+        //_webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _webView.backgroundColor = [UIColor whiteColor];
         _webView.scrollView.delegate = self;
