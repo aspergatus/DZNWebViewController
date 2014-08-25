@@ -26,6 +26,9 @@
 }
 @end
 
+
+#define progressBarHeight 2.5f
+
 @interface DZNWebViewController () <UIWebViewDelegate, UIGestureRecognizerDelegate, NJKWebViewProgressDelegate>
 {
     NJKWebViewProgress *_progressProxy;
@@ -125,7 +128,7 @@ typedef enum ScrollDirection {
     
     self.navigationController.toolbar.barTintColor = _toolbarBackgroundColor;
     self.navigationController.toolbar.tintColor = _toolbarTintColor;
-    self.navigationController.toolbar.translucent = NO;
+    self.navigationController.toolbar.translucent = YES;
     [self.navigationController.interactivePopGestureRecognizer addTarget:self action:@selector(handleInteractivePopGesture:)];
     
     self.navigationController.view.backgroundColor = [UIColor whiteColor];
@@ -134,6 +137,10 @@ typedef enum ScrollDirection {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    
+    CGSize navigationBarSize = self.navigationController.navigationBar.bounds.size;
+    self.progressView.frame=CGRectMake(0, navigationBarSize.height - progressBarHeight, navigationBarSize.width, progressBarHeight);
     
     if (!_didLoadContent) {
         [self startRequestWithURL:_URL];
@@ -190,7 +197,7 @@ typedef enum ScrollDirection {
 {
     if (!_progressView && _loadingStyle == DZNWebViewControllerLoadingStyleProgressView)
     {
-        CGFloat progressBarHeight = 2.5f;
+        
         CGSize navigationBarSize = self.navigationController.navigationBar.bounds.size;
         CGRect barFrame = CGRectMake(0, navigationBarSize.height - progressBarHeight, navigationBarSize.width, progressBarHeight);
         _progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
