@@ -117,6 +117,7 @@ typedef enum ScrollDirection {
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(webViewTapped:)];
     gestureRecognizer.delegate = self;
     [self.webView addGestureRecognizer:gestureRecognizer];
+    [self.navigationController setToolbarHidden:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -124,7 +125,7 @@ typedef enum ScrollDirection {
     [super viewWillAppear:animated];
     
     [self.navigationController.navigationBar setFrame:CGRectMake(0, 0, 320, 90)];
-    [self.navigationController setToolbarHidden:NO];
+    
     
     self.navigationController.toolbar.barTintColor = _toolbarBackgroundColor;
     self.navigationController.toolbar.tintColor = _toolbarTintColor;
@@ -638,6 +639,7 @@ typedef enum ScrollDirection {
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView
 {
+    /*
     ScrollDirection scrollDirection;
     
     if (lastContentOffset.y < scrollView.contentOffset.y)
@@ -667,6 +669,7 @@ typedef enum ScrollDirection {
     lastContentOffset = scrollView.contentOffset;
     
     //[originalDelegate scrollViewDidScroll: scrollView];
+    */
 }
 
 #pragma mark - UIGestureRecognizerDelegate methods
@@ -696,6 +699,7 @@ typedef enum ScrollDirection {
 
 - (void)webViewTapped:(id)sender
 {
+    /*
     if(!tap){
         hideNav = NO;
         tap = 1;
@@ -704,6 +708,7 @@ typedef enum ScrollDirection {
         tap = 0;
     }
     [[self navigationController] setToolbarHidden:hideNav animated:YES];
+    */
 }
 
 #pragma mark - NJKWebViewProgressDelegate methods
