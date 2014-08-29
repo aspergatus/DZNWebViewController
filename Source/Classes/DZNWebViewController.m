@@ -161,7 +161,11 @@ typedef enum ScrollDirection {
     
     [self stopLoading];
 }
-
+-(void)viewDidLayoutSubviews{
+    [super viewDidLayoutSubviews];
+    
+    _progressView.frame=CGRectMake(0, 0, self.view.frame.size.width, progressBarHeight);
+}
 
 #pragma mark - Getter methods
 
@@ -199,11 +203,12 @@ typedef enum ScrollDirection {
     if (!_progressView && _loadingStyle == DZNWebViewControllerLoadingStyleProgressView)
     {
         
-        CGSize navigationBarSize = self.navigationController.navigationBar.bounds.size;
-        CGRect barFrame = CGRectMake(0, navigationBarSize.height - progressBarHeight, navigationBarSize.width, progressBarHeight);
+        //CGSize navigationBarSize = self.navigationController.navigationBar.bounds.size;
+        CGRect barFrame = CGRectMake(0, 0, self.view.frame.size.width, progressBarHeight);
         _progressView = [[NJKWebViewProgressView alloc] initWithFrame:barFrame];
         
-        [self.navigationController.navigationBar addSubview:_progressView];
+        //[self.navigationController.navigationBar addSubview:_progressView];
+        [self.view addSubview:_progressView];
     }
     return _progressView;
 }
@@ -585,7 +590,9 @@ typedef enum ScrollDirection {
     [self.webView stopLoading];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
-
+-(void)setBackwardButtonEnabled:(BOOL)enabled{
+    _backwardBarItem.enabled=enabled;
+}
 
 #pragma mark - UIWebViewDelegate methods
 
@@ -607,7 +614,7 @@ typedef enum ScrollDirection {
         [self setActivityIndicatorsVisible:YES];
     }
     
-    _backwardBarItem.enabled = [_webView canGoBack];
+    [self setBackwardButtonEnabled:[_webView canGoBack]];
     _forwardBarItem.enabled = [_webView canGoForward];
 }
 
@@ -621,7 +628,7 @@ typedef enum ScrollDirection {
         [self setActivityIndicatorsVisible:NO];
     }
     
-    _backwardBarItem.enabled = [_webView canGoBack];
+    [self setBackwardButtonEnabled:[_webView canGoBack]];
     _forwardBarItem.enabled = [_webView canGoForward];
     
     [self setViewTitle:[self pageTitle]];
