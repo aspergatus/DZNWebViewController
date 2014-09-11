@@ -141,7 +141,7 @@ typedef enum ScrollDirection {
     
     
     CGSize navigationBarSize = self.navigationController.navigationBar.bounds.size;
-    self.progressView.frame=CGRectMake(0, navigationBarSize.height - progressBarHeight, navigationBarSize.width, progressBarHeight);
+    self.progressView.frame=CGRectMake(0, 20, navigationBarSize.width, progressBarHeight);
     
     if (!_didLoadContent) {
         [self startRequestWithURL:_URL];
