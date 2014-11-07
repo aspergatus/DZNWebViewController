@@ -51,6 +51,7 @@
     BOOL hideNav;
     BOOL mustShowNav;
     CGPoint lastContentOffset;
+    UIView* _activitySourceView;
 }
 
 typedef enum ScrollDirection {
@@ -457,7 +458,7 @@ typedef enum ScrollDirection {
     }
 }
 
-- (void)presentActivityController:(id)sender
+- (void)presentActivityController:(id)sender sourceview:(UIView*)sourceview
 {
     NSLog(@"%s",__FUNCTION__);
     
@@ -468,6 +469,8 @@ typedef enum ScrollDirection {
     NSLog(@"type : %@", type);
     NSLog(@"title : %@", title);
     NSLog(@"url : %@", url);
+    
+    _activitySourceView=sourceview;
     
     NSDictionary *content = @{@"title": [self pageTitle], @"url": [self URL].absoluteString, @"type": kDZNWebViewControllerContentTypeLink};
     [self presentActivityControllerWithContent:content];
@@ -516,6 +519,7 @@ typedef enum ScrollDirection {
     _presentingActivities = YES;
     
     UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:@[title, item] applicationActivities:[self applicationActivitiesForItem:item]];
+    controller.popoverPresentationController.sourceView=_activitySourceView;
     
     controller.excludedActivityTypes = [self excludedActivityTypesForItem:item];
     
