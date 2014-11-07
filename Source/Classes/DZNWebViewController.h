@@ -71,5 +71,7 @@ typedef NS_OPTIONS(NSUInteger, DZNWebViewControllerLoadingStyle) {
  * @returns The initialized webview controller.
  */
 - (id)initWithFileURL:(NSURL *)URL;
+-(void)setBackwardButtonEnabled:(BOOL)enabled;
+- (void)presentActivityController:(id)sender sourceview:(UIView*)sourceview;
 
 @end
